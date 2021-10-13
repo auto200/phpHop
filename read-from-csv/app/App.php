@@ -38,6 +38,33 @@ function readTransactionFile($fileHandle): array
     return $data;
 }
 
+function parseAmountToNumber(string $str): float
+{
+    return (float)str_replace(",", "", str_replace("$", "", $str));
+}
+
+function getTotalIncome(array $data): float
+{
+    $parsedNumbers = array_map(fn($row) => parseAmountToNumber($row["Amount"]), $data);
+    $positiveNumbers = array_filter($parsedNumbers, fn($num) => $num > 0);
+    return array_sum($positiveNumbers);
+}
+
+
+function getTotalExpense(array $data): float
+{
+    $parsedNumbers = array_map(fn($row) => parseAmountToNumber($row["Amount"]), $data);
+    $negativeNumbers = array_filter($parsedNumbers, fn($num) => $num < 0);
+    return array_sum($negativeNumbers);
+}
+
+function getAmountColor(string $amount): string
+{
+    return parseAmountToNumber($amount) < 0 ? "red" : "green";
+}
+
 $data = readAllTransactionFiles();
+$totalIncome = getTotalIncome($data);
+$totalExpense = getTotalExpense($data);
 
 require_once VIEWS_PATH . "transactions.php";

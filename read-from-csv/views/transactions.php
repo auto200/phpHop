@@ -21,6 +21,14 @@
         tfoot tr th {
             text-align: right;
         }
+
+        .red {
+            color: red;
+        }
+
+        .green {
+            color: green;
+        }
     </style>
 </head>
 <body>
@@ -39,22 +47,29 @@
             <td><?php echo date("M d, Y", strtotime($row["Date"])); ?></td>
             <td><?php echo $row["Check #"]; ?></td>
             <td><?php echo $row["Description"]; ?></td>
-            <td><?php echo $row["Amount"]; ?></td>
+            <td class="<?php echo getAmountColor($row["Amount"]); ?>">
+                <?php echo $row["Amount"]; ?>
+            </td>
         </tr>
     <?php endforeach; ?>
     </tbody>
     <tfoot>
     <tr>
         <th colspan="3">Total Income:</th>
-        <td><!-- YOUR CODE --></td>
+        <td>
+            $<?php echo number_format($totalIncome, 2) ?>
+        </td>
     </tr>
     <tr>
         <th colspan="3">Total Expense:</th>
-        <td><!-- YOUR CODE --></td>
+        <td>
+            -$<?php echo number_format(abs($totalExpense), 2) ?>
+        </td>
     </tr>
     <tr>
         <th colspan="3">Net Total:</th>
-        <td><!-- YOUR CODE --></td>
+        <td>
+            $<?php echo number_format(abs($totalIncome + $totalExpense), 2) ?> </td>
     </tr>
     </tfoot>
 </table>
