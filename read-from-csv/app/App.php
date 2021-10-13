@@ -39,33 +39,5 @@ function readTransactionFile($fileHandle): array
 }
 
 $data = readAllTransactionFiles();
-?>
 
-<html lang="en">
-<head>
-    <title>im reading data from csv file</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-</head>
-<body>
-<table class="table">
-    <tbody>
-    <tr>
-        <?php
-        foreach (array_keys($data[0]) as $columnName) {
-            echo "<th>$columnName</th>";
-        }
-        ?>
-    </tr>
-    <?php foreach ($data as $row): ?>
-        <tr>
-            <td><?php echo date("M d, Y", strtotime($row["Date"])); ?></td>
-            <td><?php echo $row["Check #"]; ?></td>
-            <td><?php echo $row["Description"]; ?></td>
-            <td><?php echo $row["Amount"]; ?></td>
-        </tr>
-    <?php endforeach; ?>
-    </tbody>
-</table>
-</body>
-</html>
+require_once VIEWS_PATH . "transactions.php";
