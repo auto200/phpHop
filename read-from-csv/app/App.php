@@ -13,37 +13,32 @@ function readAllTransactionFiles(): array
             $transactionsData[] = readTransactionFile($fileHandle);
         }
     }
-    return $transactionsData;
+    return array_merge(...$transactionsData);
 }
 
 function readTransactionFile($fileHandle): array
 {
-    $data = [
-        "columnNames" => [],
-        "rows" => [],
-    ];
+    $data = [];
 
     $row = fgetcsv($fileHandle);
     if (!$row) {
         //file empty
     }
 
-    $data["columnNames"] = $row;
+    $columnNames = $row;
 
     while ($row = fgetcsv($fileHandle)) {
         if (!$row) {
             break;
         }
-        $data["rows"][] = $row;
+
+        $data[] = array_combine($columnNames, $row);
     }
 
     return $data;
 }
 
-
 $data = readAllTransactionFiles();
-$columnNames = $data[0]["columnNames"];
-$rows = array_merge(...array_map(fn($asd) => $asd["rows"], $data));
 ?>
 
 <html lang="en">
@@ -57,20 +52,19 @@ $rows = array_merge(...array_map(fn($asd) => $asd["rows"], $data));
     <tbody>
     <tr>
         <?php
-        foreach ($columnNames as $columnName) {
+        foreach (array_keys($data[0]) as $columnName) {
             echo "<th>$columnName</th>";
         }
         ?>
     </tr>
-    <?php
-    foreach ($rows as $row) {
-        echo "<tr>";
-        foreach ($row as $cell) {
-            echo "<td>$cell</td>";
-        }
-        echo "</tr>";
-    }
-    ?>
+    <?php foreach ($data as $row): ?>
+        <tr>
+            <td><?php echo date("M d, Y", strtotime($row["Date"])); ?></td>
+            <td><?php echo $row["Check #"]; ?></td>
+            <td><?php echo $row["Description"]; ?></td>
+            <td><?php echo $row["Amount"]; ?></td>
+        </tr>
+    <?php endforeach; ?>
     </tbody>
 </table>
 </body>
