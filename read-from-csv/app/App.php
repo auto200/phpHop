@@ -3,15 +3,16 @@
 declare(strict_types=1);
 
 // Your Code
-function readAllTransactionFiles(): array
+function readAllTransactionFiles(string $path): array
 {
-    $fileNames = array_diff(scandir(FILES_PATH), [".", ".."]);
+    $fileNames = array_diff(scandir($path), [".", ".."]);
     $transactionsData = [];
     foreach ($fileNames as $fileName) {
-        $fileHandle = fopen(FILES_PATH . $fileName, 'r');
-        if ($fileHandle) {
-            $transactionsData[] = readTransactionFile($fileHandle);
+        $fileHandle = fopen($path . $fileName, 'r');
+        if (!$fileHandle) {
+            trigger_error("File '" . $fileName . "' not found", E_USER_ERROR);
         }
+        $transactionsData[] = readTransactionFile($fileHandle);
     }
     return array_merge(...$transactionsData);
 }
@@ -40,31 +41,25 @@ function readTransactionFile($fileHandle): array
 
 function parseAmountToNumber(string $str): float
 {
-    return (float)str_replace(",", "", str_replace("$", "", $str));
+    return (float)str_replace([",", "$"], "", $str);
 }
 
-function getTotalIncome(array $data): float
+function getTotalIncome(array $transactions): float
 {
-    $parsedNumbers = array_map(fn($row) => parseAmountToNumber($row["Amount"]), $data);
+    $parsedNumbers = array_map(fn($row) => parseAmountToNumber($row["Amount"]), $transactions);
     $positiveNumbers = array_filter($parsedNumbers, fn($num) => $num > 0);
     return array_sum($positiveNumbers);
 }
 
 
-function getTotalExpense(array $data): float
+function getTotalExpense(array $transactions): float
 {
-    $parsedNumbers = array_map(fn($row) => parseAmountToNumber($row["Amount"]), $data);
+    $parsedNumbers = array_map(fn($row) => parseAmountToNumber($row["Amount"]), $transactions);
     $negativeNumbers = array_filter($parsedNumbers, fn($num) => $num < 0);
     return array_sum($negativeNumbers);
 }
 
-function getAmountColor(string $amount): string
+function getNetTotal(array $transactions): float
 {
-    return parseAmountToNumber($amount) < 0 ? "red" : "green";
+    return getTotalExpense($transactions) + getTotalIncome($transactions);
 }
-
-$data = readAllTransactionFiles();
-$totalIncome = getTotalIncome($data);
-$totalExpense = getTotalExpense($data);
-
-require_once VIEWS_PATH . "transactions.php";

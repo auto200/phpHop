@@ -42,9 +42,9 @@
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($data as $row): ?>
+    <?php foreach ($transactions as $row): ?>
         <tr>
-            <td><?php echo date("M d, Y", strtotime($row["Date"])); ?></td>
+            <td><?php echo formatDate($row["Date"]); ?></td>
             <td><?php echo $row["Check #"]; ?></td>
             <td><?php echo $row["Description"]; ?></td>
             <td class="<?php echo getAmountColor($row["Amount"]); ?>">
@@ -57,19 +57,19 @@
     <tr>
         <th colspan="3">Total Income:</th>
         <td>
-            $<?php echo number_format($totalIncome, 2) ?>
+            $<?php echo formatNumber($totals["income"]); ?>
         </td>
     </tr>
     <tr>
         <th colspan="3">Total Expense:</th>
         <td>
-            -$<?php echo number_format(abs($totalExpense), 2) ?>
+            -$<?php echo formatNumber($totals["expense"]); ?>
         </td>
     </tr>
     <tr>
         <th colspan="3">Net Total:</th>
         <td>
-            $<?php echo number_format(abs($totalIncome + $totalExpense), 2) ?> </td>
+            $<?php echo formatNumber($totals["netTotal"]); ?> </td>
     </tr>
     </tfoot>
 </table>
